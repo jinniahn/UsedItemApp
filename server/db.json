@@ -1,0 +1,9 @@
+{
+    "users": [
+	{"id": 1, "name": "foo", "email": "foo@test.com"}
+	,{"id": 2, "name": "test", "email": "test@test.com"}	
+    ],
+    "items": [
+	{ "id": 1, "title": "아이패드 팔아요", "userId": 1, "created_at": "2018-04-25 00:00:00", "item": "ipad 4 256G", "price": "100", "status": "posted" }
+    ]
+}

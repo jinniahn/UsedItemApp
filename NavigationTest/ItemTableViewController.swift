@@ -7,12 +7,18 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
 
 class ItemTableViewController: UITableViewController {
     var items : [UsedItem] = []
     override func viewDidLoad() {
         super.viewDidLoad()
-        items = createItemSample()
+        //items = createItemSample()
+        loadItems { (objs:[UsedItem]) in
+            self.items.append(contentsOf: objs)
+            self.tableView.reloadData()
+        }
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 

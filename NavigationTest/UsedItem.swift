@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import Alamofire
+import SwiftyJSON
 
 enum ItemStatus {
     case Unknown
@@ -55,4 +57,35 @@ func createUserSample() -> [Int:User] {
     user.name = "Bongkyung"
     user.email = "bongkyung.ko@sap.com"
     return [user.id!:user]
+}
+
+let kServer = "http://192.168.0.29:3000"
+
+func loadItems(callback: @escaping ([UsedItem]) -> Void) {
+        Alamofire.request(kServer + "/items").responseJSON { response in
+
+            var ret = [UsedItem]()
+            if let obj = response.result.value {
+                let json = JSON(obj)
+                for (_,subJson):(String, JSON) in json {
+                    let item = UsedItem()
+                    
+                    item.id = subJson["id"].int
+                    item.title = subJson["title"].string
+                    item.userId = subJson["userId"].int
+                    item.createdAt = Date()
+                    item.price  = 100.0//subJson["price"].double
+                    item.status = .Posted
+
+                    print("\(item.title!)")
+                    
+                    ret.append(item)
+                    
+                }
+            }
+            
+            callback(ret)
+            
+        }
+    
 }
