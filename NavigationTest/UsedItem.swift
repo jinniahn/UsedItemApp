@@ -10,12 +10,12 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
-enum ItemStatus {
-    case Unknown
-    case Posted
-    case Canceled
-    case Finished
-    case InProgress
+enum ItemStatus: String {
+    case Unknown = "unknown"
+    case Posted = "posted"
+    case Canceled = "canceled"
+    case Finished = "finished"
+    case InProgress = "inprogress"
 }
 
 class UsedItem {
@@ -62,30 +62,38 @@ func createUserSample() -> [Int:User] {
 let kServer = "http://192.168.0.29:3000"
 
 func loadItems(callback: @escaping ([UsedItem]) -> Void) {
-        Alamofire.request(kServer + "/items").responseJSON { response in
-
-            var ret = [UsedItem]()
-            if let obj = response.result.value {
-                let json = JSON(obj)
-                for (_,subJson):(String, JSON) in json {
-                    let item = UsedItem()
-                    
-                    item.id = subJson["id"].int
-                    item.title = subJson["title"].string
-                    item.userId = subJson["userId"].int
-                    item.createdAt = Date()
-                    item.price  = 100.0//subJson["price"].double
-                    item.status = .Posted
-
-                    print("\(item.title!)")
-                    
-                    ret.append(item)
-                    
-                }
-            }
-            
-            callback(ret)
-            
-        }
     
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss"
+    
+    Alamofire.request(kServer + "/items").responseJSON { response in
+
+        var ret = [UsedItem]()
+        if let obj = response.result.value {
+            let json = JSON(obj)
+            for (_,subJson):(String, JSON) in json {
+                let item = UsedItem()
+                
+                item.id = subJson["id"].int
+                item.title = subJson["title"].string
+                item.userId = subJson["userId"].int
+                
+                let createdAt = dateFormatter.date(from: subJson["create_at"].stringValue)
+                
+                item.createdAt = createdAt
+                item.price  = subJson["price"].doubleValue
+                
+                item.status = ItemStatus(rawValue: subJson["status"].stringValue)!
+
+                print("\(item.title!)")
+                
+                ret.append(item)
+                
+            }
+        }
+        
+        callback(ret)
+        
+    }
+
 }
